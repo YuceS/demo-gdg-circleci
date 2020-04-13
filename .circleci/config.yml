@@ -12,7 +12,7 @@ jobs:
           name: Scaling
           command: | 
             kubectl scale deployment/webapp1 --replicas=10
-      
+#echo the output      
 orbs:
   gke: circleci/gcp-gke@1.0.3
   gcloud: circleci/gcp-cli@1.8.4
@@ -35,6 +35,10 @@ workflows:
           context: Demos
       - ready-for-more-users:
           type: approval
+          requires:
+            - gke/publish-and-rollout-image
+      - scale-out:
+          context: Demos
           requires:
             - gke/publish-and-rollout-image
 
