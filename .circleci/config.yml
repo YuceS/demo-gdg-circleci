@@ -40,5 +40,5 @@ workflows:
       - scale-out:
           context: Demos
           requires:
-            - gke/publish-and-rollout-image
+            - ready-for-more-users
 
