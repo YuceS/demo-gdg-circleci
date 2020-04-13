@@ -7,12 +7,16 @@ jobs:
       - gcloud/initialize
       - k8s/install-kubectl
       - gke/update-kubeconfig-with-credentials:
-          cluster: webapp1-cluster
+          cluster: webapp1
       - run:
           name: Scaling
           command: | 
             kubectl scale deployment/webapp1 --replicas=10
-#echo the output      
+#echo the output on a parallel job    
+
+
+
+
 orbs:
   gke: circleci/gcp-gke@1.0.3
   gcloud: circleci/gcp-cli@1.8.4
