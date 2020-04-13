@@ -27,7 +27,7 @@ workflows:
   main:
     jobs:
       - gke/publish-and-rollout-image:
-          cluster: webapp1-cluster
+          cluster: webapp1
           deployment: webapp1
           tag: $CIRCLE_SHA1
           image: webapp1
