@@ -12,20 +12,6 @@ jobs:
           name: Scaling
           command: | 
             kubectl scale deployment/webapp1 --replicas=10
-  echo-IP:
-    docker:
-      - image: 'cimg/python:2.7'
-    steps: 
-      - gcloud/install
-      - gcloud/initialize
-      - k8s/install-kubectl
-      - gke/update-kubeconfig-with-credentials:
-          cluster: webapp1-cluster
-      - run:
-          name: Echo
-          command: | 
-            kubectl get service webapp1 -o yaml
-            kubectl get all
       
 orbs:
   gke: circleci/gcp-gke@1.0.3
@@ -49,13 +35,6 @@ workflows:
           context: Demos
       - ready-for-more-users:
           type: approval
-          requires: 
+          requires:
             - gke/publish-and-rollout-image
-      - scale-out:
-          context: Demos
-          requires: 
-            - ready-for-more-users
-      - echo-IP:
-          context: Demos
-          requires: 
-            - ready-for-more-users
+
