@@ -1,0 +1,61 @@
+jobs:
+  scale-out:
+    docker:
+      - image: 'cimg/python:2.7'
+    steps: 
+      - gcloud/install
+      - gcloud/initialize
+      - k8s/install-kubectl
+      - gke/update-kubeconfig-with-credentials:
+          cluster: webapp1-cluster
+      - run:
+          name: Scaling
+          command: | 
+            kubectl scale deployment/webapp1 --replicas=10
+  echo-IP:
+    docker:
+      - image: 'cimg/python:2.7'
+    steps: 
+      - gcloud/install
+      - gcloud/initialize
+      - k8s/install-kubectl
+      - gke/update-kubeconfig-with-credentials:
+          cluster: webapp1-cluster
+      - run:
+          name: Echo
+          command: | 
+            kubectl get service webapp1 -o yaml
+            kubectl get all
+      
+orbs:
+  gke: circleci/gcp-gke@1.0.3
+  gcloud: circleci/gcp-cli@1.8.4
+  k8s: circleci/kubernetes@0.10.0
+  git-tools: sandbox/git-tools@0.3.0
+  aws-cli: circleci/aws-cli@1.0.0
+
+
+
+version: 2.1
+workflows:
+  main:
+    jobs:
+      - gke/publish-and-rollout-image:
+          cluster: webapp1-cluster
+          deployment: webapp1
+          tag: $CIRCLE_SHA1
+          image: webapp1
+          container: webapp1
+          context: Demos
+      - ready-for-more-users:
+          type: approval
+          requires: 
+            - gke/publish-and-rollout-image
+      - scale-out:
+          context: Demos
+          requires: 
+            - ready-for-more-users
+      - echo-IP:
+          context: Demos
+          requires: 
+            - ready-for-more-users
